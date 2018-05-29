@@ -5,7 +5,9 @@ defmodule DeleteDups.DataBase do
   @pool DBConnection.Poolboy
 
   @doc """
-  the Mongo.find function returns a Mnogo.Cursor map, so Enum.into([]) to turn it into list
+  the `Mongo.find` function returns a **`Mnogo.Cursor`** map, so `Enum.into([])` or `Enum.to_list` to turn it into list
+
+  ```elixir
   %Mongo.Cursor{
     coll: "table name",
     conn: #PID<0.194.0>,
@@ -13,17 +15,18 @@ defmodule DeleteDups.DataBase do
     query: %{"keys" => "values"},
     select: nil
   }
+  ```
   """
-  def find(table, query), do: Mongo.find(:data_base, table, query, pool: @pool) |> Enum.to_list
+  def find(table, query, opts \\ []), do: Mongo.find(:data_base, table, query, [pool: @pool] ++ opts) |> Enum.to_list
 
-  def find_one(table, query), do: Mongo.find_one(:data_base, table, query, pool: @pool, projection: %{})
+  def find_one(table, query, opts \\ []), do: Mongo.find_one(:data_base, table, query, [pool: @pool] ++ opts)
 
-  def update_one(table, query, update), do: Mongo.update_one(:data_base, table, query, update, pool: @pool)
+  def update_one(table, query, update, opts \\ []), do: Mongo.update_one(:data_base, table, query, update, [pool: @pool] ++ opts)
 
-  def insert_one(table, data), do: Mongo.insert_one(:data_base, table, data, pool: @pool)
+  def insert_one(table, data, opts \\ []), do: Mongo.insert_one(:data_base, table, data, [pool: @pool] ++ opts)
 
-  @spec delete_many(String.t(), map) :: {:ok, %Mongo.DeleteResult{deleted_count: Int}} | {:error, any()}
-  def delete_many(table, filter), do: Mongo.delete_many(:data_base, table, filter, pool: @pool)
+  @spec delete_many(String, map, list) :: {:ok, %Mongo.DeleteResult{deleted_count: Int}} | {:error, any()}
+  def delete_many(table, filter, opts \\ []), do: Mongo.delete_many(:data_base, table, filter, [pool: @pool] ++ opts)
 
   # :bypass_document_validation, :max_time, :projection, :return_document, :sort, :upsert
   # find_one_and_update(topology_pid, coll, filter, update, opts)

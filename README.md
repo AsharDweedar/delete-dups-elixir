@@ -21,6 +21,7 @@ mongod --port 5000
 
 - run app by:
 ```bash
+export BATA_BASE='choose_name'
 iex -S mix
 ```
 
@@ -28,7 +29,7 @@ iex -S mix
 
 - **DeleteDups**:
 
-      main function to run
+      main function to run: will recieve paths you want to scan aand options
 
 - **DB**:
 
@@ -37,3 +38,7 @@ iex -S mix
 - **Utils**:
 
       Define all needed functions used by main module, the hash function used to generate unique hash depending on it's content, surfer of folders and handling db insert or update.
+
+- **Delete**:
+
+      deleted matches between files

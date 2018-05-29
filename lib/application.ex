@@ -10,7 +10,9 @@ defmodule DeleteDups.Application do
     ]
 
     check_priorties_file()
-    # db_name = IO.read :line
+    if !System.get_env("DATA_BASE") do
+      raise "please provide the DATA_BASE name by exporting it in your shell or change the './config/config.exs' file to use fixed DATA_BASE name"
+    end
     opts = [strategy: :one_for_one, name: DeleteDups.Supervisor]
     Supervisor.start_link(children, opts)
   end

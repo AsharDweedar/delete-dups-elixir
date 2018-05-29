@@ -39,8 +39,33 @@ defmodule DeleteDups.Utils do
   call handle DB
   """
   @spec surfe_folders_recursive(String.t(), list, String.t(), map) :: map
+  # def surfe_folders_recursive(path, extensions, priorties_path, conclusion \\ %{"folders" => 0, "files" => 0}) do
+  #   update_folders(path, conclusion["folders"], priorties_path)
+  #   IO.inspect "scanning folder: #{path}"
+
+  #   path
+  #   |> File.ls!
+  #   |> Enum.map(fn(file) ->
+  #     full_path = Path.join(path, file)
+  #     case full_path |> File.dir? do
+  #       true ->
+  #         Task.async(fn -> surfe_folders_recursive(full_path, extensions, priorties_path, conclusion) end)
+  #       false ->
+  #         ex = Path.extname(file) |> String.downcase()
+  #         if (ex in extensions), do: (full_path |> hash() |> handle_db(full_path))
+  #         "file"
+  #     end
+  #   end)
+  #   |> Enum.reduce(conclusion, fn
+  #     "file", acc -> %{acc | "files" => acc["files"] + 1}
+  #     ele, acc ->
+  #       conc = Task.await(ele, 2_000_000)
+  #       %{"files" => acc["files"] + conc["files"], "folders" => acc["folders"] + conc["folders"]}
+  #   end)
+  # end
   def surfe_folders_recursive(path, extensions, priorties_path, conclusion \\ %{"folders" => 0, "files" => 0}) do
     update_folders(path, conclusion["folders"], priorties_path)
+    IO.inspect "scanning folder: #{path}"
 
     path
     |> File.ls!
@@ -101,69 +126,16 @@ defmodule DeleteDups.Utils do
   @spec store_folders(nil) :: :ok
   def store_folders(nil), do: store_folders(@priorties_path)
   @spec store_folders(String.t()) :: :ok
-  def store_folders(priorties) do
-    priorties
+  def store_folders(priorties_path) do
+    priorties_path
     |> File.read!()
     |> String.split("\n")
     |> Enum.each(fn line ->
       if line != "" do
         [order, path] = line |> String.split("*#*")
-        query = %{"name" => path, "order" => order}
-        case DataBase.find_one("folders", query) do
-          nil -> DataBase.insert_one("folders", query)
-          _path -> nil
-        end
+        query = %{"name" => path}
+        DataBase.update_one("folders", query, %{"$set" => %{"order" => order}}, [upsert: true])
       end
     end)
   end
-
-  @doc """
-  delete files according to thier priority if tag is :sorted, if tag is :all will delete all matches and keep one no matter the folder
-  """
-  @spec delete_matches(atom) :: :ok
-  def delete_matches(tag) when is_atom(tag) do
-    # TODO:
-    # find some way to get  %{"paths" => when_value_is %{"$gt" => 0}}
-    DataBase.find("paths", %{})
-    |> Enum.each(fn %{"paths" => paths} -> delete_matches(tag, paths, (paths|> length) -1) end)
-  end
-  @doc """
-  delete matches of one file that have been scaned and stored in db
-  """
-  @spec delete_matches(String.t()) :: [:ok | {:error, any}]
-  def delete_matches(hash) do
-    %{"paths" => paths} = DataBase.find_one("paths", %{"hash" => hash})
-    case paths |> length do
-      1 -> [:ok]
-      n -> delete_matches(hash, paths, n-1)
-    end
-  end
-  @spec delete_matches(:all, list,integer()) :: [any]
-  def delete_matches(:all, paths, n) do
-
-    IO.inspect paths
-    IO.inspect n
-    delete_from(paths, n)
-  end
-  @spec delete_matches(:sorted, String.t(), Int) :: [:ok | {:error, any}]
-  def delete_matches(:sorted, paths, n), do: delete_from(sorter(paths), n)
-
-  @doc false
-  defp sorter(paths) do
-    paths
-    |> Enum.sort(fn path1, path2 ->
-      %{"order" => order1} = DataBase.find_one("folders", %{"name" => path1 |> Path.dirname})
-      %{"order" => order2} = DataBase.find_one("folders", %{"name" => path2 |> Path.dirname})
-      (order2|> Integer.parse) >= (order1|> Integer.parse)
-    end)
-  end
-
-  @doc false
-  @spec delete_from(list, integer()) :: [any]
-  defp delete_from(list, n) when n >= 1 do
-    for n <- 1..n do
-      list |> Enum.at(n) |> IO.inspect(label: "deleteing:") |> File.rm()
-    end
-  end
-  defp delete_from(_list, _n), do: []
 end

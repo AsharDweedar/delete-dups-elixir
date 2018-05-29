@@ -5,6 +5,6 @@ config :delete_dups,
 		name: :data_base,
 		pool: DBConnection.Poolboy,
 		port: 5000,
-		database: "delete_dups",
+		database: System.get_env("DATA_BASE") ,
 		auth_source: "admin"
 	]

@@ -7,7 +7,9 @@ defmodule DeleteDups do
   @priorties_path File.cwd! |> Path.join("priorties.txt")
 
   import DeleteDups.Utils
-  alias DeleteDups.DataBase
+  import DeleteDups.Delete
+  alias DeleteDups.DataBase, as: DB
+  require Logger
 
 
   @doc """
@@ -17,20 +19,21 @@ defmodule DeleteDups do
     * `:priorties_path` - set path to `.txt` file to store prirties at, this can't ba passed along with `:delete` key set to true, so you can set priorties_path before deleting
     * `:extensions` - allowed extensions
   """
-  @spec run(any, map) :: map | String.t()
+  @spec run(any, map) :: map | String
   def run(path, opts \\ %{})
   def run(path, opts) when is_binary(path), do: run([path], opts)
   def run(paths, opts) when is_list(paths) do
     opts = opts || %{}
     with :ok <- setup(opts[:priorties_path]),
       %{"folders" => _n_folders, "files" => _n_files} = conc <- find_dups(paths, opts[:priorties_path], opts[:extensions]),
+      _ <- IO.inspect(conc, label: "operations conclusion:"),
       _ <- opts_handler(opts) do
-      conc |> IO.inspect(label: "operations conclusion:")
+      "DONE.........."
     else
       {:error, reason} ->
-        IO.inspect "some error happened wgile setting up DataBase and priorties file because: #{reason}"
+        Logger.error "some error happened while setting up DataBase and priorties file because: #{reason}"
         _ ->
-        IO.inspect "unknown error"
+        Logger.error "unknown error"
     end
   end
 
@@ -52,11 +55,11 @@ defmodule DeleteDups do
   def find_dups(paths, nil , extensions), do:
     find_dups(paths, @priorties_path, extensions || @extensions)
 
-  @spec find_dups(list, String.t(), list) :: map
+  @spec find_dups(list, String, list) :: map
   def find_dups(paths, priorties_path, extensions), do:
     paths
     |> Enum.map(&Task.async(fn -> surfe_folders_recursive(&1, extensions || @extensions, priorties_path) end))
-    |> Enum.map(&Task.await(&1, 300_000))
+    |> Enum.map(&Task.await(&1, 3_000_000))
     |> Enum.reduce(&(%{"folders" => &1["folders"] + &2["folders"], "files" => &1["files"] + &2["files"]}))
 
   @doc """
@@ -64,13 +67,13 @@ defmodule DeleteDups do
   """
   @spec setup(nil) :: :ok | {:error, any()}
   def setup(nil), do: setup(@priorties_path)
-  @spec setup(String.t()) :: :ok | {:error, any()}
+  @spec setup(String) :: :ok | {:error, any()}
   def setup(priorties_path) do
     drop_table("paths")
     drop_table("folders")
     File.write(priorties_path, "")
   end
 
-  @spec drop_table(String.t()) :: {:ok, %Mongo.DeleteResult{deleted_count: Int}} | {:error, any()}
-  def drop_table(table), do: DataBase.delete_many(table, %{})
+  @spec drop_table(String) :: {:ok, %Mongo.DeleteResult{deleted_count: Int}} | {:error, any()}
+  def drop_table(table), do: DB.delete_many(table, %{})
 end
