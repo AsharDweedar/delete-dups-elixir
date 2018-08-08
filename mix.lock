@@ -1,7 +1,12 @@
 %{
+  "amnesia": {:hex, :amnesia, "0.2.7", "ffc2221bf72da4cfafbbb497adf9cf7e52138f1333cec5836187a53f94ae0665", [:mix], [{:exquisite, "~> 0.1.7", [hex: :exquisite, repo: "hexpm", optional: false]}], "hexpm"},
   "confex": {:hex, :confex, "3.3.1", "8febaf751bf293a16a1ed2cbd258459cdcc7ca53cfa61d3f83d49dd276a992b4", [:mix], [], "hexpm"},
   "connection": {:hex, :connection, "1.0.4", "a1cae72211f0eef17705aaededacac3eb30e6625b04a6117c1b2db6ace7d5976", [:mix], [], "hexpm"},
   "db_connection": {:hex, :db_connection, "1.1.3", "89b30ca1ef0a3b469b1c779579590688561d586694a3ce8792985d4d7e575a61", [:mix], [{:connection, "~> 1.0.2", [hex: :connection, repo: "hexpm", optional: false]}, {:poolboy, "~> 1.5", [hex: :poolboy, repo: "hexpm", optional: true]}, {:sbroker, "~> 1.0", [hex: :sbroker, repo: "hexpm", optional: true]}], "hexpm"},
+  "ex_utils": {:hex, :ex_utils, "0.1.7", "2c133e0bcdc49a858cf8dacf893308ebc05bc5fba501dc3d2935e65365ec0bf3", [:mix], [], "hexpm"},
+  "exquisite": {:hex, :exquisite, "0.1.8", "ee8f56aae477287ce5e7dfcbc163a420cccbb73e680a6d80a09203e9ef514fa4", [:mix], [], "hexpm"},
+  "memento": {:hex, :memento, "0.0.1", "2cf06bd349462bf478f19fbfcf11604287e296ecf3e5fb32794d1bfd0d4c358d", [:mix], [{:amnesia, "~> 0.2.0", [hex: :amnesia, repo: "hexpm", optional: false]}], "hexpm"},
   "mongodb": {:hex, :mongodb, "0.4.4", "8def7abbe77938ac314d94eedecab1778e678d434889383d638ad2a230edd4e3", [:mix], [{:connection, "~> 1.0", [hex: :connection, repo: "hexpm", optional: false]}, {:db_connection, "~> 1.1", [hex: :db_connection, repo: "hexpm", optional: false]}], "hexpm"},
   "poolboy": {:hex, :poolboy, "1.5.1", "6b46163901cfd0a1b43d692657ed9d7e599853b3b21b95ae5ae0a777cf9b6ca8", [:rebar], [], "hexpm"},
+  "que": {:hex, :que, "0.5.0", "88fa0b8594bbd365fe6cc5fe708605b4dc1f2d1622d7fe4f8ab08ad85680053d", [:mix], [{:amnesia, "~> 0.2", [hex: :amnesia, repo: "hexpm", optional: false]}, {:ex_utils, "~> 0.1.6", [hex: :ex_utils, repo: "hexpm", optional: false]}, {:memento, "~> 0.0.1", [hex: :memento, repo: "hexpm", optional: false]}], "hexpm"},
 }

@@ -6,7 +6,7 @@ defmodule DeleteDups do
   @extensions ~w(.png .jpg .giff .tiff .tif .jpeg .bmp)
   @priorties_path File.cwd! |> Path.join("priorties.txt")
 
-  import DeleteDups.Utils
+  import DeleteDups.Workers.Scanner
   import DeleteDups.Delete
   alias DeleteDups.DataBase, as: DB
   require Logger

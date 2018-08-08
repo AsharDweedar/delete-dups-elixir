@@ -1,9 +1,15 @@
-defmodule DeleteDups.Utils do
+defmodule DeleteDups.Workers.Scanner do
+  use Que.Worker, concurrency: 4
+  alias DeleteDups.DataBase
+  require Logger
+
   @moduledoc """
   """
 
-  alias DeleteDups.DataBase
-  require Logger
+  def perform(message) do
+    IO.inspect(message)
+    message
+  end
 
   @priorties_path File.cwd! |> Path.join("priorties.txt")
 
@@ -73,6 +79,9 @@ defmodule DeleteDups.Utils do
       full_path = Path.join(path, file)
       case full_path |> File.dir? do
         true ->
+          message_to_worker = "found new folder: #{full_path}"
+          # should
+          Que.add(DeleteDups.Workers.Scanner, message_to_worker)
           new_conc =
           surfe_folders_recursive(full_path, extensions, priorties_path, %{sub_conc | "folders" => (1 + sub_conc["folders"])})
         false ->
@@ -82,6 +91,25 @@ defmodule DeleteDups.Utils do
       end
     end)
   end
+  # def surfe_folders_recursive(path, extensions, priorties_path, conclusion \\ %{"folders" => 0, "files" => 0}) do
+  #   update_folders(path, conclusion["folders"], priorties_path)
+  #   IO.inspect "scanning folder: #{path}"
+
+  #   path
+  #   |> File.ls!
+  #   |> Enum.reduce(conclusion, fn(file, sub_conc) ->
+  #     full_path = Path.join(path, file)
+  #     case full_path |> File.dir? do
+  #       true ->
+  #         new_conc =
+  #         surfe_folders_recursive(full_path, extensions, priorties_path, %{sub_conc | "folders" => (1 + sub_conc["folders"])})
+  #       false ->
+  #         ex = Path.extname(file) |> String.downcase()
+  #         if (ex in extensions), do: (full_path |> hash() |> handle_db(full_path))
+  #         %{sub_conc | "files" => (1 + sub_conc["files"])}
+  #     end
+  #   end)
+  # end
 
   @doc """
   check the path existance in db

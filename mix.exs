@@ -18,6 +18,7 @@ defmodule DeleteDups.Mixfile do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
+      applications: [:que],
       extra_applications: [:logger, :mongodb, :poolboy],
       mod: {DeleteDups.Application, []}
     ]
@@ -28,7 +29,8 @@ defmodule DeleteDups.Mixfile do
     [
       {:mongodb, "~> 0.4.3"},
       {:confex, "~> 3.3.1"},
-      {:poolboy, "~> 1.5.1"}
+      {:poolboy, "~> 1.5.1"},
+      {:que, "~> 0.5.0"}
     ]
   end
 end

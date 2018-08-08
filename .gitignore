@@ -24,3 +24,6 @@ erl_crash.dump
 delete_dups-*.tar
 
 priorties.txt
+
+# DB for internal Q
+/mnesia

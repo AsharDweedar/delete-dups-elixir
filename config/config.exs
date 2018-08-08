@@ -8,3 +8,6 @@ config :delete_dups,
 		database: System.get_env("DATA_BASE") ,
 		auth_source: "admin"
 	]
+
+config :mnesia, dir: 'mnesia/#{Mix.env}/#{node()}'
+
