@@ -21,7 +21,7 @@ mongod --port 5000
 
 - run app by:
 ```bash
-export BATA_BASE='choose_name'
+export DATA_BASE='choose_name'
 iex -S mix
 ```
 
@@ -29,7 +29,7 @@ iex -S mix
 
 - **DeleteDups**:
 
-      main function to run: will recieve paths you want to scan aand options
+      main function to run: will receive paths you want to scan and options
 
 - **DB**:
 
